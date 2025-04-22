@@ -1,22 +1,26 @@
-var isValid = function(s) {
-    if (s.length % 2 !== 0) return false; // Odd length strings can't be valid
-
+/**
+ * @param {string} s
+ * @return {string}
+ */
+var decodeString = function(s) {
     let stack = [];
-    for (let i = 0; i < s.length; i++) {
-        let c = s[i];
+    let currentNum = 0;
+    let currentStr = '';
 
-        if (c === '(' || c === '{' || c === '[') {
-            stack.push(c);
+    for (let char of s) {
+        if (!isNaN(char)) {
+            currentNum = currentNum * 10 + parseInt(char);
+        } else if (char === '[') {
+            stack.push([currentStr, currentNum]);
+            currentStr = '';
+            currentNum = 0;
+        } else if (char === ']') {
+            const [prevStr, num] = stack.pop();
+            currentStr = prevStr + currentStr.repeat(num);
         } else {
-            if (stack.length === 0) return false;
-            let top = stack.pop();
-            if (c === ')' && top != '('){
-                return false
-            } else if(c === '}' && top != '{'){
-                return false
-            } else if(c === ']' && top != '[') return false
+            currentStr += char;
         }
     }
 
-    return stack.length === 0;
+    return currentStr;
 };
